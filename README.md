@@ -1,0 +1,2 @@
+# Vugar_Niftaliyev_Computer_Graphics_HW2
+Assignment 2
