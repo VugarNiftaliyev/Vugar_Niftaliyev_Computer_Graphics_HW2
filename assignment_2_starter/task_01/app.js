@@ -88,7 +88,7 @@ onload = () => {
 
   modelViewMatrix = gl.getUniformLocation(program, "modelViewMatrix");
 
-  // Add event listeners for keyboard events
+  // adding event listeners for keyboard events
   document.addEventListener("keydown", handleKeyDown);
 
   render();
@@ -98,15 +98,18 @@ function handleKeyDown(event) {
     switch (event.key) {
       case "T":
         // top-side view of camera
-        eye = [0, 0, 1];
+        eye = [0, 1, 0];
+        up = [0, 0, 1];
         break;
       case "L":
         // left-side view of camera
         eye = [-1, 0, 0];
+        up = [0, 1, 0];
         break;
       case "F":
         // front-side view of camera
         eye = [0, 0, 0.1];
+        up = [1, 0, 0];
         break;
       case "D":
         // rotating the camera clockwise
@@ -121,14 +124,49 @@ function handleKeyDown(event) {
     }
   }
   function rotating_camera(theta) {
-    // updating the up vector
-    let cos_t = Math.cos(theta);
-    let sin_t = Math.sin(theta);
-    let new_X = cos_t * up[0] - sin_t * up[1];
-    let new_Y = sin_t * up[0] + cos_t * up[1];
-    up[0] = new_X;
-    up[1] = new_Y;
-}
+    // defining rotation matrices for each view orientation
+    const topRotationMatrix = [
+      [Math.cos(theta), 0, Math.sin(theta)],
+      [0, 1, 0],
+      [-Math.sin(theta), 0, Math.cos(theta)]
+    ];
+  
+    const leftRotationMatrix = [
+      [1, 0, 0],
+      [0, Math.cos(theta), Math.sin(theta)],
+      [0, -Math.sin(theta), Math.cos(theta)]
+    ];
+  
+    const frontRotationMatrix = [
+      [Math.cos(theta), -Math.sin(theta), 0],
+      [Math.sin(theta), Math.cos(theta), 0],
+      [0, 0, 1]
+    ];
+  
+    // creating a function to multiply a rotation matrix with the up vector
+    function multiplyMatrixWithVector(matrix, vector) {
+      const result = [0, 0, 0];
+  
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          result[i] += matrix[i][j] * vector[j];
+        }
+      }
+  
+      return result;
+    }
+  
+    // determining the view orientation and apply the corresponding rotation
+    if (eye[0] === 0 && eye[1] === 1 && eye[2] === 0) {
+      up = multiplyMatrixWithVector(topRotationMatrix, up);
+    } else if (eye[0] === -1 && eye[1] === 0 && eye[2] === 0) {
+      up = multiplyMatrixWithVector(leftRotationMatrix, up);
+    } else {
+      up = multiplyMatrixWithVector(frontRotationMatrix, up);
+    }
+  }
+  
+  
 function render() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
