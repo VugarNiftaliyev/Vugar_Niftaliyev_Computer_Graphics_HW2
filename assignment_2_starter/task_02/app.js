@@ -154,28 +154,32 @@ function handleKeyDown(event) {
 
 function rotating_camera(theta) {
   // defining rotation matrices for each view orientation
-  const topRotationMatrix = [
-    [Math.cos(theta), 0, Math.sin(theta)],
+  // top-side view; rotation matrix around the Y-axis in the X-Z plane
+  const top_view_rotation_matrix = [
+    [Math.cos(theta), 0, -Math.sin(theta)],
     [0, 1, 0],
-    [-Math.sin(theta), 0, Math.cos(theta)]
+    [Math.sin(theta), 0, Math.cos(theta)]
   ];
 
-  const leftRotationMatrix = [
+    // left-side view; rotation matrix around the X-axis in the Y-Z plane
+  const left_view_rotation_matrix = [
     [1, 0, 0],
     [0, Math.cos(theta), Math.sin(theta)],
     [0, -Math.sin(theta), Math.cos(theta)]
   ];
 
-  const frontRotationMatrix = [
+   // front-side view; rotation matrix around the Z-axis in the X-Y plane 
+  const front_view_rotation_matrix = [
     [Math.cos(theta), -Math.sin(theta), 0],
     [Math.sin(theta), Math.cos(theta), 0],
     [0, 0, 1]
   ];
 
-  // creating a function to multiply a rotation matrix with the up vector
+  // creating a  function to multiply a rotation matrix with the up vector
   function multiplyMatrixWithVector(matrix, vector) {
     const result = [0, 0, 0];
 
+    // matrix-vector multiplication
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         result[i] += matrix[i][j] * vector[j];
@@ -185,15 +189,21 @@ function rotating_camera(theta) {
     return result;
   }
 
-  // determining the view orientation and apply the corresponding rotation
+  // checking  position of the camera and applying the corresponding rotation
+  // in the top-side view of the camera
   if (eye[0] === 0 && eye[1] === 1 && eye[2] === 0) {
-    up = multiplyMatrixWithVector(topRotationMatrix, up);
-  } else if (eye[0] === -1 && eye[1] === 0 && eye[2] === 0) {
-    up = multiplyMatrixWithVector(leftRotationMatrix, up);
-  } else {
-    up = multiplyMatrixWithVector(frontRotationMatrix, up);
+    up = multiplyMatrixWithVector(top_view_rotation_matrix, up);
+  }
+  // in the left-side view of the camera
+  else if (eye[0] === -1 && eye[1] === 0 && eye[2] === 0) {
+    up = multiplyMatrixWithVector(left_view_rotation_matrix, up);
+  }
+  // in the front-side view of camera
+  else {
+    up = multiplyMatrixWithVector(front_view_rotation_matrix, up);
   }
 }
+
 function render() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
