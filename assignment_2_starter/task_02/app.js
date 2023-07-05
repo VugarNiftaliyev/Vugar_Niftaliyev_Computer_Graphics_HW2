@@ -156,9 +156,9 @@ function rotating_camera(theta) {
   // defining rotation matrices for each view orientation
   // top-side view; rotation matrix around the Y-axis in the X-Z plane
   const top_view_rotation_matrix = [
-    [Math.cos(theta), 0, -Math.sin(theta)],
+    [Math.cos(theta), 0, Math.sin(theta)],
     [0, 1, 0],
-    [Math.sin(theta), 0, Math.cos(theta)]
+    [-Math.sin(theta), 0, Math.cos(theta)]
   ];
 
     // left-side view; rotation matrix around the X-axis in the Y-Z plane
